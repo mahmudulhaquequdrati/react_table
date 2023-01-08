@@ -90,43 +90,46 @@ function App() {
   useEffect(() => {
     isLeapYear(year);
     howManyDays(month);
-  }, [leapYear]);
+  }, [leapYear, year, month]);
   function createData(name, datas) {
     return { name, datas };
   }
   const tableData = [
-    {name: "Nur",
+    {
+      name: "Nur",
       datas: [
         { day: 1, work: 9 },
         { day: 2, work: 8 },
         { day: 3, work: 7 },
         { day: 28, work: 8 },
-    
-      ]
+      ],
     },
-    {name: "Mohammod",
+    {
+      name: "Mohammod",
       datas: [
         { day: 1, work: 9 },
         { day: 2, work: 5 },
-        { day: 3, work: 3 }
-      ]
+        { day: 3, work: 3 },
+      ],
     },
-    {name: "Abdur",
+    {
+      name: "Abdur",
       datas: [
         { day: 1, work: 4 },
         { day: 2, work: 3 },
-        { day: 3, work: 2 }
-      ]
+        { day: 3, work: 2 },
+      ],
     },
-    {name: "Rahim",
+    {
+      name: "Rahim",
       datas: [
         { day: 1, work: 7 },
-      { day: 2, work: 3 },
-      { day: 3, work: 6 }
-      ]
+        { day: 2, work: 3 },
+        { day: 3, work: 6 },
+        { day: 20, work: 8 },
+      ],
     },
-
-  ]
+  ];
   // const tableData = [
   //   createData("Nur", [
   //     { day: 1, work: 9 },
@@ -190,9 +193,6 @@ function App() {
 
       <TableContainer component={Paper}>
         <Table aria-label="simple table">
-
-
-          
           <TableHead>
             <TableRow>
               <TableCell
@@ -213,7 +213,6 @@ function App() {
             </TableRow>
           </TableHead>
 
-
           <TableBody>
             {tableData.map((data) => (
               <TableRow
@@ -223,16 +222,16 @@ function App() {
                   {data.name}
                 </TableCell>
 
-                {Array.from({ length: (days) }, (_, i) => i + 1).map((day) => (
-                <TableCell> {            
-                data.datas.map(hour => hour.day === day ? hour.work : null)
-
-                  } </TableCell>
+                {Array.from({ length: days }, (_, i) => i + 1).map((day) => (
+                  <TableCell>
+                    {data.datas.map((hour) =>
+                      hour.day === day ? hour.work : null
+                    )}
+                  </TableCell>
                 ))}
               </TableRow>
-    
             ))}
-              {/* <TableRow>{data.datas.map(hour => hour.work)}</TableRow> */}
+            {/* <TableRow>{data.datas.map(hour => hour.work)}</TableRow> */}
           </TableBody>
         </Table>
       </TableContainer>
