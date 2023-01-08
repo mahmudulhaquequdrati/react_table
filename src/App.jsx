@@ -15,7 +15,7 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 
 function App() {
-  const num = 0;
+  const [num, setNum] = useState(0);
   const [value, setValue] = useState(dayjs("2023-01-01"));
   const [leapYear, setLeapYear] = useState(false);
   const [days, setDays] = useState(0);
@@ -91,71 +91,46 @@ function App() {
     isLeapYear(year);
     howManyDays(month);
   }, [leapYear, year, month]);
-  function createData(name, datas) {
-    return { name, datas };
-  }
-  const tableData = [
+
+  let tableData = [
     {
+      id: 11,
       name: "Nur",
       datas: [
-        { day: 1, work: 9 },
-        { day: 2, work: 8 },
-        { day: 3, work: 7 },
-        { day: 28, work: 8 },
+        { date: "01.01.2023", work: 8, id: 1 },
+        { date: "02.01.2023", work: 6, id: 2 },
+        { date: "03.01.2023", work: 8, id: 3 },
+        { date: "04.01.2023", work: 0, id: 4 },
       ],
     },
     {
+      id: 12,
       name: "Mohammod",
       datas: [
-        { day: 1, work: 9 },
-        { day: 2, work: 5 },
-        { day: 3, work: 3 },
+        { date: "01.01.2023", work: 8, id: 1 },
+        { date: "02.01.2023", work: 6, id: 2 },
       ],
     },
     {
+      id: 13,
       name: "Abdur",
       datas: [
-        { day: 1, work: 4 },
-        { day: 2, work: 3 },
-        { day: 3, work: 2 },
+        { date: "01.01.2023", work: 8, id: 1 },
+        { date: "02.01.2023", work: 6, id: 2 },
       ],
     },
     {
+      id: 14,
       name: "Rahim",
       datas: [
-        { day: 1, work: 7 },
-        { day: 2, work: 3 },
-        { day: 3, work: 6 },
-        { day: 20, work: 8 },
+        { date: "01.01.2023", work: 8, id: 1 },
+        { date: "02.01.2023", work: 6, id: 2 },
       ],
     },
   ];
-  // const tableData = [
-  //   createData("Nur", [
-  //     { day: 1, work: 9 },
-  //     { day: 2, work: 8 },
-  //     { day: 3, work: 7 },
-  //   ]),
-  //   createData(
-  //     "Mohammod",
-  //     { day: 1, work: 9 },
-  //     { day: 2, work: 5 },
-  //     { day: 3, work: 3 }
-  //   ),
-  //   createData(
-  //     "Abdur",
-  //     { day: 1, work: 4 },
-  //     { day: 2, work: 3 },
-  //     { day: 3, work: 2 }
-  //   ),
-  //   createData(
-  //     "Rahim",
-  //     { day: 1, work: 7 },
-  //     { day: 2, work: 3 },
-  //     { day: 3, work: 6 }
-  //   ),
-  // ];
-  console.log(tableData);
+
+  // console.log(tableData.map((data) => data.datas));
+
   return (
     <div className="">
       <div
@@ -224,14 +199,42 @@ function App() {
 
                 {Array.from({ length: days }, (_, i) => i + 1).map((day) => (
                   <TableCell>
-                    {data.datas.map((hour) =>
-                      hour.day === day ? hour.work : null
+                    {/* 
+                    { date: "01.01.2023", work: 8 },
+                    { date: "02.01.2023", work: 6 },
+                    { date: "03.01.2023", work: 8 },
+                    { date: "04.01.2023", work: 6 },
+                    */}
+
+                    {/* if user has working hour on this day then show it else only show 0 in other fields with validation */}
+                    {data.datas.filter(
+                      (data) =>
+                        data.date ===
+                        dayjs(value).date(day).format("DD.MM.YYYY")
+                    ).length > 0 ? (
+                      data.datas
+                        .filter(
+                          (data) =>
+                            data.date ===
+                            dayjs(value).date(day).format("DD.MM.YYYY")
+                        )
+                        .map((data) => <span>{data.work}</span>)
+                    ) : (
+                      <span
+                        onClick={() => {
+                          console.log(data.name);
+                          console.log(
+                            dayjs(value).date(day).format("DD.MM.YYYY")
+                          );
+                        }}
+                      >
+                        0
+                      </span>
                     )}
                   </TableCell>
                 ))}
               </TableRow>
             ))}
-            {/* <TableRow>{data.datas.map(hour => hour.work)}</TableRow> */}
           </TableBody>
         </Table>
       </TableContainer>
