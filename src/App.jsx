@@ -15,6 +15,7 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 
 function App() {
+  const num = 0;
   const [value, setValue] = useState(dayjs("2023-01-01"));
   const [leapYear, setLeapYear] = useState(false);
   const [days, setDays] = useState(0);
@@ -94,30 +95,64 @@ function App() {
     return { name, datas };
   }
   const tableData = [
-    createData("Person 1", [
-      { day: 1, work: 3 },
+    {name: "Nur",
+      datas: [
+        { day: 1, work: 9 },
+        { day: 2, work: 8 },
+        { day: 3, work: 7 },
+        { day: 28, work: 8 },
+    
+      ]
+    },
+    {name: "Mohammod",
+      datas: [
+        { day: 1, work: 9 },
+        { day: 2, work: 5 },
+        { day: 3, work: 3 }
+      ]
+    },
+    {name: "Abdur",
+      datas: [
+        { day: 1, work: 4 },
+        { day: 2, work: 3 },
+        { day: 3, work: 2 }
+      ]
+    },
+    {name: "Rahim",
+      datas: [
+        { day: 1, work: 7 },
       { day: 2, work: 3 },
-      { day: 3, work: 3 },
-    ]),
-    createData(
-      "Person 2",
-      { day: 1, work: 3 },
-      { day: 2, work: 3 },
-      { day: 3, work: 3 }
-    ),
-    createData(
-      "Person 3",
-      { day: 1, work: 3 },
-      { day: 2, work: 3 },
-      { day: 3, work: 3 }
-    ),
-    createData(
-      "Person 4",
-      { day: 1, work: 3 },
-      { day: 2, work: 3 },
-      { day: 3, work: 3 }
-    ),
-  ];
+      { day: 3, work: 6 }
+      ]
+    },
+
+  ]
+  // const tableData = [
+  //   createData("Nur", [
+  //     { day: 1, work: 9 },
+  //     { day: 2, work: 8 },
+  //     { day: 3, work: 7 },
+  //   ]),
+  //   createData(
+  //     "Mohammod",
+  //     { day: 1, work: 9 },
+  //     { day: 2, work: 5 },
+  //     { day: 3, work: 3 }
+  //   ),
+  //   createData(
+  //     "Abdur",
+  //     { day: 1, work: 4 },
+  //     { day: 2, work: 3 },
+  //     { day: 3, work: 2 }
+  //   ),
+  //   createData(
+  //     "Rahim",
+  //     { day: 1, work: 7 },
+  //     { day: 2, work: 3 },
+  //     { day: 3, work: 6 }
+  //   ),
+  // ];
+  console.log(tableData);
   return (
     <div className="">
       <div
@@ -155,6 +190,9 @@ function App() {
 
       <TableContainer component={Paper}>
         <Table aria-label="simple table">
+
+
+          
           <TableHead>
             <TableRow>
               <TableCell
@@ -174,6 +212,8 @@ function App() {
               ))}
             </TableRow>
           </TableHead>
+
+
           <TableBody>
             {tableData.map((data) => (
               <TableRow
@@ -182,11 +222,17 @@ function App() {
                 <TableCell component="th" scope="row">
                   {data.name}
                 </TableCell>
-                {Array.from({ length: days }, (_, i) => i + 1).map((day) => (
-                  <TableCell> 0 </TableCell>
+
+                {Array.from({ length: (days) }, (_, i) => i + 1).map((day) => (
+                <TableCell> {            
+                data.datas.map(hour => hour.day === day ? hour.work : null)
+
+                  } </TableCell>
                 ))}
               </TableRow>
+    
             ))}
+              {/* <TableRow>{data.datas.map(hour => hour.work)}</TableRow> */}
           </TableBody>
         </Table>
       </TableContainer>
