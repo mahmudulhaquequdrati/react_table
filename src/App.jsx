@@ -26,6 +26,12 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
+import { CSVLink } from "react-csv";
+// import jsPDF from "jspdf";
+// import autoTable from "jspdf-autotable";
+
+// const doc = new jsPDF();
+
 const useStyles = makeStyles((theme) => ({
   inputField: {
     width: "80%",
@@ -114,9 +120,9 @@ function App() {
     howManyDays(month);
   }, [leapYear, year, month]);
 
-  function createData(name, datas) {
-    return { name, datas };
-  }
+  // function createData(name, datas) {
+  //   return { name, datas };
+  // }
   // Nafisa
   const [updateName, setUpdateName] = useState([]);
   const [allWorkingHour, setAllWorkingHour] = useState(null);
@@ -127,6 +133,34 @@ function App() {
     setOpen(false);
     console.log(allWorkingHour);
   };
+
+  // const dates = Array.from({ length: days }, (_, i) => i + 1).map((day) => {
+  //   const datetime = dayjs(value).date(day).format("DD.MM.YYYY");
+  //   const dayname = dayjs(value).date(day).format("dddd");
+  //   return datetime;
+  // });
+  // console.log(dates.join());
+
+  //  {
+  //    Array.from({ length: days }, (_, i) => i + 1).map((day) => (
+  //      <TableCell>
+  //        {dayjs(value).date(day).format("DD.MM.YYYY")}{" "}
+  //        {dayjs(value).date(day).format("dddd")}
+  //      </TableCell>
+  //    ));
+  //  }
+
+  // const handleExport = () => {
+  //   doc.text("Hello world!", 100, 100);
+  //   doc.autoTable({
+  //     head: [["Name", dates.join(","), "total"]],
+  //     body: [
+  //       ["Nur", "01.01.2023", 8, 8],
+  //       ["Nur", "02.01.2023", 6, 14],
+  //     ],
+  //   });
+  //   doc.save("export-data.pdf");
+  // };
 
   const handleSubmit = (event) => {
     alert("A name was submitted: " + this.state.value);
@@ -170,7 +204,65 @@ function App() {
       ],
     },
   ];
+  const [totalHoursData, setTotalHoursData] = useState([]);
+  useEffect(() => {
+    const result = tableData.map((data) => {
+      let TotalHours = 0;
 
+      let object = {};
+      Array.from({ length: days }, (_, i) => i + 1).map((day, index) => {
+        const datetime = dayjs(value).date(day).format("DD.MM.YYYY");
+        const workTime = data.datas.filter((a) => a.date === datetime);
+
+        if (workTime.length > 0) {
+          workTime.map((a) => {
+            return (TotalHours += a.work);
+          });
+        }
+      });
+      setTotalHoursData((prev) => [...prev, TotalHours]);
+      return TotalHours;
+    });
+  }, [days, value]);
+  // console.log(totalHoursData);
+
+  let finalTotal = 0;
+  const csvArrayData = tableData.map((data) => {
+    let totalHour = 0;
+    let object = {};
+    Array.from({ length: days }, (_, i) => i + 1).map((day, index) => {
+      const datetime = dayjs(value).date(day).format("DD.MM.YYYY");
+      const dayname = dayjs(value).date(day).format("dddd");
+      const dateandday = `${datetime} ${dayname}`;
+      const workTime = data.datas.filter((a) => a.date === datetime);
+
+      if (workTime.length > 0) {
+        workTime.map((a) => {
+          return (totalHour += a.work);
+        });
+      }
+
+      index + 1 !== days
+        ? (object = {
+            ...object,
+            name: data.name,
+            [`${dateandday}`]: workTime[0]?.work || 0,
+          })
+        : (object = {
+            ...object,
+            name: data.name,
+            [`${dateandday}`]: workTime[0]?.work || 0,
+            total: totalHour,
+          });
+    });
+    finalTotal += totalHour;
+    return object;
+  });
+  const finalCsvArray = [
+    ...csvArrayData,
+    { total: `FinalTotal: ${finalTotal}` },
+  ];
+  // console.log(finalCsvArray);
   const handleChange = (name) => {
     const change = tableData.filter((a) => a.name === name);
     setUpdateName(change[0].datas);
@@ -202,7 +294,21 @@ function App() {
             gap: 2,
           }}
         >
-          <Button>Export</Button>
+          <CSVLink
+            className=" btn btn-primary me-4 "
+            style={{
+              textDecoration: "none",
+            }}
+            data={finalCsvArray}
+          >
+            <Button
+              sx={{
+                textDecoration: "none",
+              }}
+            >
+              Export
+            </Button>
+          </CSVLink>
           <Button>Add New Person</Button>
           <Button onClick={() => setOpen(true)}>Update</Button>
         </Box>
@@ -245,8 +351,8 @@ function App() {
               </TableCell>
 
               {/* make an array */}
-              {Array.from({ length: days }, (_, i) => i + 1).map((day) => (
-                <TableCell>
+              {Array.from({ length: days }, (_, i) => i + 1).map((day, i) => (
+                <TableCell key={i}>
                   {dayjs(value).date(day).format("DD.MM.YYYY")}{" "}
                   {dayjs(value).date(day).format("dddd")}
                 </TableCell>
@@ -256,16 +362,16 @@ function App() {
           </TableHead>
 
           <TableBody>
-            {tableData.map((data) => (
+            {tableData.map((data, i) => (
               <TableRow
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                key={i}
               >
                 <TableCell component="th" scope="row">
                   {data.name}
                 </TableCell>
-
-                {Array.from({ length: days }, (_, i) => i + 1).map((day) => (
-                  <TableCell>
+                {Array.from({ length: days }, (_, i) => i + 1).map((day, i) => (
+                  <TableCell key={i}>
                     {data.datas.filter(
                       (data) =>
                         data.date ===
@@ -277,7 +383,7 @@ function App() {
                             data.date ===
                             dayjs(value).date(day).format("DD.MM.YYYY")
                         )
-                        .map((data) => <span>{data.work}</span>)
+                        .map((data, i) => <span key={i}>{data.work}</span>)
                     ) : (
                       <span
                         onClick={() => {
@@ -309,7 +415,7 @@ function App() {
                 style={{ textAlign: "right", marginRight: "20px" }}
                 colSpan={34}
               >
-                Total: <span style={{ fontWeight: "bold" }}>31</span>
+                Total: <span style={{ fontWeight: "bold" }}>{finalTotal}</span>
               </TableCell>
             </TableRow>
           </TableBody>
@@ -338,8 +444,10 @@ function App() {
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
               >
-                {tableData.map((data) => (
-                  <MenuItem value={data.name}>{data.name}</MenuItem>
+                {tableData.map((data, i) => (
+                  <MenuItem value={data.name} key={i}>
+                    {data.name}
+                  </MenuItem>
                 ))}
               </Select>
             </FormControl>
@@ -358,8 +466,11 @@ function App() {
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
               >
-                {updateName.map((data) => (
-                  <MenuItem value={data.work}> {data.work}</MenuItem>
+                {updateName.map((data, i) => (
+                  <MenuItem value={data.work} key={i}>
+                    {" "}
+                    {data.work}
+                  </MenuItem>
                 ))}
               </Select>
               <Input
