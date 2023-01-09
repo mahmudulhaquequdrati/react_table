@@ -1,7 +1,8 @@
-import { Box } from "@mui/material";
+import { Box, Button,Dialog, DialogTitle, DialogContentText, DialogActions,MenuItem, Select, FormControl, InputLabel, Input } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
 import { useEffect, useState } from "react";
 import TextField from "@mui/material/TextField";
+import { makeStyles } from "@material-ui/core/styles";
 import Stack from "@mui/material/Stack";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -13,14 +14,25 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-
+import Data from './Data';
+const useStyles = makeStyles((theme) => ({
+  inputField: {
+    width: "80%",
+    margin: theme.spacing(1, 0),
+  },
+}));
 function App() {
-  const [num, setNum] = useState(0);
+
+  const classes = useStyles();
+  const num = 0;
+
+  // const [num, setNum] = useState(0);
+
   const [value, setValue] = useState(dayjs("2023-01-01"));
   const [leapYear, setLeapYear] = useState(false);
   const [days, setDays] = useState(0);
   // get the day name of the date
-  console.log(value.format("dddd"));
+  // console.log(value.format("dddd"));
   // get the month name of the date
   const month = value?.format("MMMM");
   // get the year of the date
@@ -92,7 +104,33 @@ function App() {
     howManyDays(month);
   }, [leapYear, year, month]);
 
+  function createData(name, datas) {
+    return { name, datas };
+  }
+  // Nafisa
+const [updateName, setUpdateName] = useState([]);
+const [allWorkingHour, setAllWorkingHour] = useState(null);
+// const [allWorkingDays, setAllWorkingDays] = useState(null);
+const [open, setOpen] = useState(false)
+
+const handleUpdate = ()=>{
+  setOpen(false)
+  console.log(allWorkingHour);
+}
+
+
+const handleSubmit =(event)=> {
+  alert('A name was submitted: ' + this.state.value);
+  event.preventDefault();
+}
+// console.log(allWorkingHour);
+// console.log(updateName);
+ 
+
+
+
   let tableData = [
+
     {
       id: 11,
       name: "Nur",
@@ -128,6 +166,41 @@ function App() {
       ],
     },
   ];
+
+  const handleChange = (name)=>{
+    const change = tableData.filter(a=>a.name === name);
+    setUpdateName(change[0].datas);
+    console.log(updateName);
+  }
+  
+  
+  // const tableData = [
+  //   createData("Nur", [
+  //     { day: 1, work: 9 },
+  //     { day: 2, work: 8 },
+  //     { day: 3, work: 7 },
+  //   ]),
+  //   createData(
+  //     "Mohammod",
+  //     { day: 1, work: 9 },
+  //     { day: 2, work: 5 },
+  //     { day: 3, work: 3 }
+  //   ),
+  //   createData(
+  //     "Abdur",
+  //     { day: 1, work: 4 },
+  //     { day: 2, work: 3 },
+  //     { day: 3, work: 2 }
+  //   ),
+  //   createData(
+  //     "Rahim",
+  //     { day: 1, work: 7 },
+  //     { day: 2, work: 3 },
+  //     { day: 3, work: 6 }
+  //   ),
+  // ];
+  // console.log(tableData);
+
 
   // console.log(tableData.map((data) => data.datas));
 
@@ -190,7 +263,7 @@ function App() {
 
           <TableBody>
             {tableData.map((data) => (
-              <TableRow
+              <TableRow 
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               >
                 <TableCell component="th" scope="row">
@@ -198,6 +271,8 @@ function App() {
                 </TableCell>
 
                 {Array.from({ length: days }, (_, i) => i + 1).map((day) => (
+
+
                   <TableCell>
                     {/* 
                     { date: "01.01.2023", work: 8 },
@@ -230,14 +305,71 @@ function App() {
                       >
                         0
                       </span>
+
                     )}
                   </TableCell>
                 ))}
               </TableRow>
             ))}
           </TableBody>
+          
         </Table>
       </TableContainer>
+       
+        <Button onClick={()=>setOpen(true)}>Update</Button>
+        <Dialog open={open} onClose={()=>setOpen(false) }  aria-labelledby="dialog-title" aria-describedby="dialog-description">
+          <DialogTitle id='dialog-title'>Update Your Information</DialogTitle>
+          <DialogContentText id='dialog-description'>
+            {/* Details */}
+            <>
+              <FormControl fullWidth className={classes.inputField} onSubmit={handleSubmit}>
+                <InputLabel id="demo-simple-select-label">
+                  Name
+                </InputLabel>
+
+                <Select onChange={(e)=>handleChange(e.target.value)}
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+            
+                >
+                 
+                  {tableData.map(data=><MenuItem  value={data.name}>{data.name}</MenuItem>)}
+                  
+                 
+                </Select>
+              </FormControl>
+            </>
+            <Box>
+              <FormControl fullWidth className={classes.inputField} onSubmit={handleSubmit}>
+                <InputLabel id="demo-simple-select-label">
+                  Working Hour
+                </InputLabel>
+
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+            
+                >
+                  {updateName.map(data=>
+                  
+                    <MenuItem value={data.work} > {data.work}</MenuItem>
+                
+                    )}
+                       
+                </Select>
+                <Input onChange={(e)=>setAllWorkingHour(e.target.value)}></Input>
+                
+              </FormControl>
+            </Box>
+
+          </DialogContentText>
+          <DialogActions>
+
+            <Button onClick={()=>setOpen(false)}>Cancel</Button>
+            <Button autoFocus onClick={()=>handleUpdate()}>Submit</Button>
+          </DialogActions>
+        </Dialog>
+    
     </div>
   );
 }
