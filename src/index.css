@@ -1,4 +1,9 @@
-* {
-  /* background-color: rgb(88, 88, 88); */
-  /* color: white; */
+.update{
+  display: flex;
+  flex-direction: column;
+  width: 100px;
+  padding: 10px;
+}
+.dis_flex{
+  display: flex;
 }

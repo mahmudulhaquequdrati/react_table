@@ -26,6 +26,8 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
+import Update from "./update/Update";
+import AddUser from "./adduser/AddUser";
 const useStyles = makeStyles((theme) => ({
   inputField: {
     width: "80%",
@@ -37,7 +39,7 @@ function App() {
   const num = 0;
 
   // const [num, setNum] = useState(0);
-
+  const [ table, setTable] = useState([]);
   const [value, setValue] = useState(dayjs("2023-01-01"));
   const [leapYear, setLeapYear] = useState(false);
   const [days, setDays] = useState(0);
@@ -110,12 +112,20 @@ function App() {
     }
   };
   useEffect(() => {
+    getRoute(); 
     isLeapYear(year);
     howManyDays(month);
   }, [leapYear, year, month]);
 
   function createData(name, datas) {
     return { name, datas };
+  }
+  const getRoute = () => {
+    try{
+      fetch('http://localhost:5000/api/user/all')
+      .then(result => result.json())
+      .then(service => setTable(service))
+    } catch(err){console.log("Get method is faild");}
   }
   // Nafisa
   const [updateName, setUpdateName] = useState([]);
@@ -176,7 +186,6 @@ function App() {
     setUpdateName(change[0].datas);
     console.log(updateName);
   };
-
   return (
     <div className="">
       <Box
@@ -256,7 +265,7 @@ function App() {
           </TableHead>
 
           <TableBody>
-            {tableData.map((data) => (
+            {table.map((data) => (
               <TableRow
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               >
@@ -316,6 +325,11 @@ function App() {
         </Table>
       </TableContainer>
 
+      <div className="dis_flex">
+      <Update data={table} getRoute={getRoute}/>
+      <AddUser getRoute={getRoute} />
+      </div>
+
       <Dialog
         open={open}
         onClose={() => setOpen(false)}
@@ -325,47 +339,11 @@ function App() {
         <DialogTitle id="dialog-title">Update Your Information</DialogTitle>
         <DialogContentText id="dialog-description">
           {/* Details */}
-          <>
-            <FormControl
-              fullWidth
-              className={classes.inputField}
-              onSubmit={handleSubmit}
-            >
-              <InputLabel id="demo-simple-select-label">Name</InputLabel>
-
-              <Select
-                onChange={(e) => handleChange(e.target.value)}
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-              >
-                {tableData.map((data) => (
-                  <MenuItem value={data.name}>{data.name}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </>
           <Box>
-            <FormControl
-              fullWidth
-              className={classes.inputField}
-              onSubmit={handleSubmit}
-            >
-              <InputLabel id="demo-simple-select-label">
-                Working Hour
-              </InputLabel>
-
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-              >
-                {updateName.map((data) => (
-                  <MenuItem value={data.work}> {data.work}</MenuItem>
-                ))}
-              </Select>
-              <Input
-                onChange={(e) => setAllWorkingHour(e.target.value)}
-              ></Input>
-            </FormControl>
+          <div className="dis_flex">
+          <Update data={table} getRoute={getRoute}/>
+          <AddUser getRoute={getRoute} />
+          </div>
           </Box>
         </DialogContentText>
         <DialogActions>
