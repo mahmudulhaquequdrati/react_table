@@ -129,7 +129,7 @@ function App() {
   // }
   const getRoute = () => {
     try {
-      fetch("http://localhost:5000/api/user/all")
+      fetch("https://table-backend-list.onrender.com/api/user/all")
         .then((result) => result.json())
         .then((service) => setTable(service));
     } catch (err) {
@@ -308,7 +308,7 @@ function App() {
   const [text, setText] = useState("");
   const submit = async (e) => {
     e.preventDefault();
-    fetch("http://localhost:5000/api/user/add", {
+    fetch("https://table-backend-list.onrender.com/api/user/add", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name: text }),
@@ -340,7 +340,7 @@ function App() {
     setHour(e.target.value);
   };
   const submitUpdate = async () => {
-    fetch(`http://localhost:5000/api/user/update/${nameId}`, {
+    fetch(`https://table-backend-list.onrender.com/api/user/update/${nameId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ work: Number(hour), date: myDate }),
@@ -443,51 +443,68 @@ function App() {
             </TableRow>
           </TableHead>
 
-          <TableBody>
-            {table.map((data, i) => (
-              <TableRow
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                key={i}
-              >
-                <TableCell component="th" scope="row">
-                  {data.name}
-                </TableCell>
-                {Array.from({ length: days }, (_, i) => i + 1).map((day, i) => (
-                  <TableCell key={i}>
-                    {data.datas.filter(
-                      (data) =>
-                        data.date ===
-                        dayjs(value).date(day).format("DD.MM.YYYY")
-                    ).length > 0 ? (
-                      data.datas
-                        .filter(
+          {table.length > 0 && (
+            <TableBody>
+              {table.map((data, i) => (
+                <TableRow
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  key={i}
+                >
+                  <TableCell component="th" scope="row">
+                    {data.name}
+                  </TableCell>
+                  {Array.from({ length: days }, (_, i) => i + 1).map(
+                    (day, i) => (
+                      <TableCell key={i}>
+                        {data.datas.filter(
                           (data) =>
                             data.date ===
                             dayjs(value).date(day).format("DD.MM.YYYY")
-                        )
-                        .map((data, i) => <span key={i}>{data.work}</span>)
-                    ) : (
-                      <span>0</span>
-                    )}
+                        ).length > 0 ? (
+                          data.datas
+                            .filter(
+                              (data) =>
+                                data.date ===
+                                dayjs(value).date(day).format("DD.MM.YYYY")
+                            )
+                            .map((data, i) => <span key={i}>{data.work}</span>)
+                        ) : (
+                          <span>0</span>
+                        )}
+                      </TableCell>
+                    )
+                  )}
+                  <TableCell>
+                    {csvArrayData && csvArrayData[i] && csvArrayData[i].total
+                      ? csvArrayData[i].total
+                      : 0}
                   </TableCell>
-                ))}
-                <TableCell>
-                  {csvArrayData && csvArrayData[i] && csvArrayData[i].total
-                    ? csvArrayData[i].total
-                    : 0}
+                </TableRow>
+              ))}
+              {/* Added fixed row for total */}
+              <TableRow>
+                <TableCell
+                  style={{ textAlign: "right", marginRight: "20px" }}
+                  colSpan={34}
+                >
+                  Total:{" "}
+                  <span style={{ fontWeight: "bold" }}>{finalTotal}</span>
                 </TableCell>
               </TableRow>
-            ))}
-            {/* Added fixed row for total */}
-            <TableRow>
-              <TableCell
-                style={{ textAlign: "right", marginRight: "20px" }}
-                colSpan={34}
-              >
-                Total: <span style={{ fontWeight: "bold" }}>{finalTotal}</span>
-              </TableCell>
-            </TableRow>
-          </TableBody>
+            </TableBody>
+          )}
+          {table.length === 0 && (
+            <TableBody>
+              <TableRow>
+                <TableCell
+                  style={{ textAlign: "center", marginRight: "20px" }}
+                  colSpan={18}
+                >
+                  No Data Found
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          )}
         </Table>
       </TableContainer>
 
@@ -595,8 +612,8 @@ function App() {
         <Box
           sx={{
             py: 2,
-            px: 4,
-            minWidth: "300px",
+            px: 3,
+            minWidth: "350px",
           }}
         >
           <DialogTitle
@@ -613,17 +630,32 @@ function App() {
                 className="update"
                 style={{
                   width: "100%",
+                  paddingBottom: "5px",
                 }}
               >
                 <div
-                  className="update"
+                  className=""
                   style={{
-                    width: "85%",
+                    width: "86%",
                     display: "flex",
                     justifyContent: "space-between",
+                    marginBottom: "20px",
                   }}
                 >
-                  <input
+                  <TextField
+                    id="outlined-basic"
+                    label="Name"
+                    variant="outlined"
+                    value={text}
+                    onChange={(e) => setText(e.target.value)}
+                    sx={{
+                      height: "30px",
+                      width: "100%",
+                      ml: "20px",
+                      mb: 1,
+                    }}
+                  />
+                  {/* <input
                     style={{
                       height: "30px",
                       width: "100%",
@@ -634,7 +666,7 @@ function App() {
                     type="text"
                     value={text}
                     onChange={(e) => setText(e.target.value)}
-                  />
+                  /> */}
                 </div>
               </div>
             </Box>
