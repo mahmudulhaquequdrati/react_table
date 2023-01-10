@@ -3,18 +3,15 @@ import {
   Button,
   Dialog,
   DialogTitle,
-  DialogContentText,
   DialogActions,
   MenuItem,
   Select,
   FormControl,
   InputLabel,
-  Input,
 } from "@mui/material";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import TextField from "@mui/material/TextField";
-import { makeStyles } from "@material-ui/core/styles";
 import Stack from "@mui/material/Stack";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -26,33 +23,19 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import Update from "./update/Update";
-import AddUser from "./adduser/AddUser";
 import { CSVLink } from "react-csv";
+
+// does not work properly in pdf size
 // import jsPDF from "jspdf";
 // import autoTable from "jspdf-autotable";
-
 // const doc = new jsPDF();
 
-// const useStyles = makeStyles((theme) => ({
-//   inputField: {
-//     width: "80%",
-//     margin: theme.spacing(1, 0),
-//   },
-// }));
 function App() {
-  // const classes = useStyles();
-  // const num = 0;
-
-  // const [num, setNum] = useState(0);
   const [table, setTable] = useState([]);
   const [value, setValue] = useState(dayjs("2023-01-01"));
   const [leapYear, setLeapYear] = useState(false);
   const [days, setDays] = useState(0);
-
-  // get the day name of the date
-  // console.log(value.format("dddd"));
-  // get the month name of the date
+  // get the month
   const month = value?.format("MMMM");
   // get the year of the date
   const year = value?.format("YYYY");
@@ -124,102 +107,18 @@ function App() {
     howManyDays(month);
   }, [leapYear, year, month]);
 
-  // function createData(name, datas) {
-  //   return { name, datas };
-  // }
   const getRoute = () => {
     try {
       fetch("https://table-backend-list.onrender.com/api/user/all")
         .then((result) => result.json())
         .then((service) => setTable(service));
     } catch (err) {
-      console.log("Get method is faild");
+      console.log("something went wrong in getting al the datas");
     }
   };
-  // function createData(name, datas) {
-  //   return { name, datas };
-  // }
-  // Nafisa
-  const [updateName, setUpdateName] = useState([]);
-  const [allWorkingHour, setAllWorkingHour] = useState(null);
-  // const [allWorkingDays, setAllWorkingDays] = useState(null);
+
   const [open, setOpen] = useState(false);
   const [openAdd, setOpenAdd] = useState(false);
-
-  const handleUpdate = () => {
-    setOpen(false);
-  };
-
-  // const dates = Array.from({ length: days }, (_, i) => i + 1).map((day) => {
-  //   const datetime = dayjs(value).date(day).format("DD.MM.YYYY");
-  //   const dayname = dayjs(value).date(day).format("dddd");
-  //   return datetime;
-  // });
-  // console.log(dates.join());
-
-  //  {
-  //    Array.from({ length: days }, (_, i) => i + 1).map((day) => (
-  //      <TableCell>
-  //        {dayjs(value).date(day).format("DD.MM.YYYY")}{" "}
-  //        {dayjs(value).date(day).format("dddd")}
-  //      </TableCell>
-  //    ));
-  //  }
-
-  // const handleExport = () => {
-  //   doc.text("Hello world!", 100, 100);
-  //   doc.autoTable({
-  //     head: [["Name", dates.join(","), "total"]],
-  //     body: [
-  //       ["Nur", "01.01.2023", 8, 8],
-  //       ["Nur", "02.01.2023", 6, 14],
-  //     ],
-  //   });
-  //   doc.save("export-data.pdf");
-  // };
-
-  // const handleSubmit = (event) => {
-  //   alert("A name was submitted: " + this.state.value);
-  //   event.preventDefault();
-  // };
-
-  let tableData = [
-    {
-      id: 11,
-      name: "Nur",
-      datas: [
-        { date: "01.01.2023", work: 8, id: 1 },
-        { date: "02.01.2023", work: 6, id: 2 },
-        { date: "03.01.2023", work: 8, id: 3 },
-        { date: "04.01.2023", work: 0, id: 4 },
-        { date: "05.01.2023", work: 6, id: 5 },
-      ],
-    },
-    {
-      id: 12,
-      name: "Mohammod",
-      datas: [
-        { date: "01.01.2023", work: 8, id: 1 },
-        { date: "02.01.2023", work: 6, id: 2 },
-      ],
-    },
-    {
-      id: 13,
-      name: "Abdur",
-      datas: [
-        { date: "01.01.2023", work: 8, id: 1 },
-        { date: "02.01.2023", work: 6, id: 2 },
-      ],
-    },
-    {
-      id: 14,
-      name: "Rahim",
-      datas: [
-        { date: "01.01.2023", work: 8, id: 1 },
-        { date: "02.01.2023", work: 6, id: 2 },
-      ],
-    },
-  ];
 
   let finalTotal = 0;
   const csvArrayData = table?.map((data) => {
@@ -236,7 +135,7 @@ function App() {
           return (totalHour += a.work);
         });
       }
-
+      // making an object to export data
       index + 1 !== days
         ? (object = {
             ...object,
@@ -254,58 +153,13 @@ function App() {
     return object;
   });
 
-  // const [objectData, setObjectData] = useState([]);
-
-  // useEffect(() => {
-  //   const csvArrayDatas = table?.map((data) => {
-  //     let totalHours = 0;
-  //     let object = {};
-  //     Array.from({ length: days }, (_, i) => i + 1).map((day, index) => {
-  //       const datetime = dayjs(value).date(day).format("DD.MM.YYYY");
-  //       const dayname = dayjs(value).date(day).format("dddd");
-  //       const dateandday = `${datetime} ${dayname}`;
-  //       const workTime = data.datas.filter((a) => a.date === datetime);
-
-  //       if (workTime.length > 0) {
-  //         workTime.map((a) => {
-  //           return (totalHours += a.work);
-  //         });
-  //       }
-
-  //       index + 1 !== days
-  //         ? (object = {
-  //             ...object,
-  //             name: data.name,
-  //             [`${dateandday}`]: workTime[0]?.work || 0,
-  //             _id: data._id,
-  //           })
-  //         : (object = {
-  //             ...object,
-  //             name: data.name,
-  //             [`${dateandday}`]: workTime[0]?.work || 0,
-  //             total: totalHours,
-  //             _id: data._id,
-  //           });
-  //     });
-  //     setObjectData((prev) => [...prev, object]);
-  //     return;
-  //     // return object;
-  //   });
-  // }, [table]);
-  // console.log(objectData);
   const finalCsvArray = [
     ...csvArrayData,
     { total: `FinalTotal: ${finalTotal}` },
   ];
-  // console.log(csvArrayData);
-  // const handleChange = (name) => {
-  //   const change = table?.filter((a) => a.name === name);
-  //   setUpdateName(change[0].datas);
-  //   console.log(updateName);
-  // };
-  const handleAdd = (name) => {};
 
   const [text, setText] = useState("");
+  // add new user to database
   const submit = async (e) => {
     e.preventDefault();
     fetch("https://table-backend-list.onrender.com/api/user/add", {
@@ -339,6 +193,7 @@ function App() {
   const handleNumber = (e) => {
     setHour(e.target.value);
   };
+  // update any user data
   const submitUpdate = async () => {
     fetch(`https://table-backend-list.onrender.com/api/user/update/${nameId}`, {
       method: "PUT",
@@ -655,18 +510,6 @@ function App() {
                       mb: 1,
                     }}
                   />
-                  {/* <input
-                    style={{
-                      height: "30px",
-                      width: "100%",
-                      border: "1px solid #ccc",
-                      paddingLeft: "10px",
-                    }}
-                    placeholder="Name"
-                    type="text"
-                    value={text}
-                    onChange={(e) => setText(e.target.value)}
-                  /> */}
                 </div>
               </div>
             </Box>
