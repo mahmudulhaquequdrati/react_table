@@ -34,21 +34,22 @@ import { CSVLink } from "react-csv";
 
 // const doc = new jsPDF();
 
-const useStyles = makeStyles((theme) => ({
-  inputField: {
-    width: "80%",
-    margin: theme.spacing(1, 0),
-  },
-}));
+// const useStyles = makeStyles((theme) => ({
+//   inputField: {
+//     width: "80%",
+//     margin: theme.spacing(1, 0),
+//   },
+// }));
 function App() {
-  const classes = useStyles();
-  const num = 0;
+  // const classes = useStyles();
+  // const num = 0;
 
   // const [num, setNum] = useState(0);
-  const [ table, setTable] = useState([]);
+  const [table, setTable] = useState([]);
   const [value, setValue] = useState(dayjs("2023-01-01"));
   const [leapYear, setLeapYear] = useState(false);
   const [days, setDays] = useState(0);
+
   // get the day name of the date
   // console.log(value.format("dddd"));
   // get the month name of the date
@@ -118,21 +119,23 @@ function App() {
     }
   };
   useEffect(() => {
-    getRoute(); 
+    getRoute();
     isLeapYear(year);
     howManyDays(month);
   }, [leapYear, year, month]);
 
-  function createData(name, datas) {
-    return { name, datas };
-  }
+  // function createData(name, datas) {
+  //   return { name, datas };
+  // }
   const getRoute = () => {
-    try{
-      fetch('http://localhost:5000/api/user/all')
-      .then(result => result.json())
-      .then(service => setTable(service))
-    } catch(err){console.log("Get method is faild");}
-  }
+    try {
+      fetch("http://localhost:5000/api/user/all")
+        .then((result) => result.json())
+        .then((service) => setTable(service));
+    } catch (err) {
+      console.log("Get method is faild");
+    }
+  };
   // function createData(name, datas) {
   //   return { name, datas };
   // }
@@ -141,10 +144,10 @@ function App() {
   const [allWorkingHour, setAllWorkingHour] = useState(null);
   // const [allWorkingDays, setAllWorkingDays] = useState(null);
   const [open, setOpen] = useState(false);
+  const [openAdd, setOpenAdd] = useState(false);
 
   const handleUpdate = () => {
     setOpen(false);
-    console.log(allWorkingHour);
   };
 
   // const dates = Array.from({ length: days }, (_, i) => i + 1).map((day) => {
@@ -175,10 +178,10 @@ function App() {
   //   doc.save("export-data.pdf");
   // };
 
-  const handleSubmit = (event) => {
-    alert("A name was submitted: " + this.state.value);
-    event.preventDefault();
-  };
+  // const handleSubmit = (event) => {
+  //   alert("A name was submitted: " + this.state.value);
+  //   event.preventDefault();
+  // };
 
   let tableData = [
     {
@@ -217,30 +220,9 @@ function App() {
       ],
     },
   ];
-  const [totalHoursData, setTotalHoursData] = useState([]);
-  useEffect(() => {
-    const result = tableData.map((data) => {
-      let TotalHours = 0;
-
-      let object = {};
-      Array.from({ length: days }, (_, i) => i + 1).map((day, index) => {
-        const datetime = dayjs(value).date(day).format("DD.MM.YYYY");
-        const workTime = data.datas.filter((a) => a.date === datetime);
-
-        if (workTime.length > 0) {
-          workTime.map((a) => {
-            return (TotalHours += a.work);
-          });
-        }
-      });
-      setTotalHoursData((prev) => [...prev, TotalHours]);
-      return TotalHours;
-    });
-  }, [days, value]);
-  // console.log(totalHoursData);
 
   let finalTotal = 0;
-  const csvArrayData = tableData.map((data) => {
+  const csvArrayData = table?.map((data) => {
     let totalHour = 0;
     let object = {};
     Array.from({ length: days }, (_, i) => i + 1).map((day, index) => {
@@ -271,15 +253,103 @@ function App() {
     finalTotal += totalHour;
     return object;
   });
+
+  // const [objectData, setObjectData] = useState([]);
+
+  // useEffect(() => {
+  //   const csvArrayDatas = table?.map((data) => {
+  //     let totalHours = 0;
+  //     let object = {};
+  //     Array.from({ length: days }, (_, i) => i + 1).map((day, index) => {
+  //       const datetime = dayjs(value).date(day).format("DD.MM.YYYY");
+  //       const dayname = dayjs(value).date(day).format("dddd");
+  //       const dateandday = `${datetime} ${dayname}`;
+  //       const workTime = data.datas.filter((a) => a.date === datetime);
+
+  //       if (workTime.length > 0) {
+  //         workTime.map((a) => {
+  //           return (totalHours += a.work);
+  //         });
+  //       }
+
+  //       index + 1 !== days
+  //         ? (object = {
+  //             ...object,
+  //             name: data.name,
+  //             [`${dateandday}`]: workTime[0]?.work || 0,
+  //             _id: data._id,
+  //           })
+  //         : (object = {
+  //             ...object,
+  //             name: data.name,
+  //             [`${dateandday}`]: workTime[0]?.work || 0,
+  //             total: totalHours,
+  //             _id: data._id,
+  //           });
+  //     });
+  //     setObjectData((prev) => [...prev, object]);
+  //     return;
+  //     // return object;
+  //   });
+  // }, [table]);
+  // console.log(objectData);
   const finalCsvArray = [
     ...csvArrayData,
     { total: `FinalTotal: ${finalTotal}` },
   ];
-  // console.log(finalCsvArray);
-  const handleChange = (name) => {
-    const change = tableData.filter((a) => a.name === name);
-    setUpdateName(change[0].datas);
-    console.log(updateName);
+  // console.log(csvArrayData);
+  // const handleChange = (name) => {
+  //   const change = table?.filter((a) => a.name === name);
+  //   setUpdateName(change[0].datas);
+  //   console.log(updateName);
+  // };
+  const handleAdd = (name) => {};
+
+  const [text, setText] = useState("");
+  const submit = async (e) => {
+    e.preventDefault();
+    fetch("http://localhost:5000/api/user/add", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: text }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.name) {
+          setText("");
+          getRoute();
+          setOpenAdd(false);
+        }
+      });
+  };
+  const [myDate, setMyDate] = useState("");
+  const [valueDate, setValueDate] = useState(
+    dayjs().date(1).format("YYYY-MM-DD")
+  );
+  const [hour, setHour] = useState("");
+  const [nameId, setNameId] = useState("");
+  const handleDateChange = (value) => {
+    setValueDate(value);
+    const formet_date = dayjs(value).format("DD.MM.YYYY");
+    setMyDate(formet_date);
+  };
+  const handleName = (e) => {
+    setNameId(e.target.value);
+  };
+  const handleNumber = (e) => {
+    setHour(e.target.value);
+  };
+  const submitUpdate = async () => {
+    fetch(`http://localhost:5000/api/user/update/${nameId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ work: Number(hour), date: myDate }),
+    })
+      .then((res) => res.json())
+      .then((result) => {
+        getRoute();
+        setOpen(false);
+      });
   };
   return (
     <div className="">
@@ -294,7 +364,6 @@ function App() {
       >
         <div
           style={{
-            // marginTop: "20px",
             marginLeft: "20px",
           }}
         >
@@ -307,6 +376,7 @@ function App() {
           }}
         >
           <CSVLink
+            filename={`${dayjs(value).format("MMMM YYYY")}.csv`}
             className=" btn btn-primary me-4 "
             style={{
               textDecoration: "none",
@@ -321,7 +391,7 @@ function App() {
               Export
             </Button>
           </CSVLink>
-          <Button>Add New Person</Button>
+          <Button onClick={() => setOpenAdd(true)}>Add New Person</Button>
           <Button onClick={() => setOpen(true)}>Update</Button>
         </Box>
       </Box>
@@ -397,27 +467,14 @@ function App() {
                         )
                         .map((data, i) => <span key={i}>{data.work}</span>)
                     ) : (
-                      <span
-                        onClick={() => {
-                          console.log(data.name);
-                          console.log(
-                            dayjs(value).date(day).format("DD.MM.YYYY")
-                          );
-                        }}
-                      >
-                        0
-                      </span>
+                      <span>0</span>
                     )}
                   </TableCell>
                 ))}
                 <TableCell>
-                  {/* total in every single month separetly */}
-                  {data.datas && data.datas.length > 0 ? (
-                    data.datas.map((data) => data.work).reduce((a, b) => a + b)
-                  ) : (
-                    // data.datas.map((data) => data.work).reduce((a, b) => a + b)
-                    <span>0</span>
-                  )}
+                  {csvArrayData && csvArrayData[i] && csvArrayData[i].total
+                    ? csvArrayData[i].total
+                    : 0}
                 </TableCell>
               </TableRow>
             ))}
@@ -434,33 +491,161 @@ function App() {
         </Table>
       </TableContainer>
 
-      <div className="dis_flex">
-      <Update data={table} getRoute={getRoute}/>
-      <AddUser getRoute={getRoute} />
-      </div>
-
       <Dialog
         open={open}
         onClose={() => setOpen(false)}
         aria-labelledby="dialog-title"
         aria-describedby="dialog-description"
       >
-        <DialogTitle id="dialog-title">Update Your Information</DialogTitle>
-        <DialogContentText id="dialog-description">
-          {/* Details */}
-          <Box>
-          <div className="dis_flex">
-          <Update data={table} getRoute={getRoute}/>
-          <AddUser getRoute={getRoute} />
-          </div>
+        <Box
+          sx={{
+            py: 2,
+            px: 4,
+            minWidth: "300px",
+          }}
+        >
+          <DialogTitle id="dialog-title">Update Working Hours</DialogTitle>
+          <Box id="dialog-description">
+            {/* Details */}
+            <Box>
+              <div
+                className="update"
+                style={{
+                  width: "100%",
+                }}
+              >
+                <FormControl
+                  sx={{
+                    mx: "auto",
+                    width: "86%",
+                    mb: 2,
+                  }}
+                  fullWidth
+                >
+                  <InputLabel id="demo-simple-select-label">
+                    Select A Name
+                  </InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={nameId}
+                    label="Name"
+                    onChange={handleName}
+                  >
+                    {table?.map((data) => (
+                      <MenuItem value={data._id} key={data._id}>
+                        {data?.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    label="Basic example"
+                    value={valueDate}
+                    onChange={(newValue) => {
+                      handleDateChange(newValue);
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        sx={{
+                          textAlign: "center",
+                          mx: "auto",
+                          display: "flex",
+                          justifyContent: "center",
+                        }}
+                      />
+                    )}
+                  />
+                </LocalizationProvider>
+                <TextField
+                  id="outlined-basic"
+                  label="Working Hour"
+                  variant="outlined"
+                  type={"number"}
+                  onChange={handleNumber}
+                  sx={{
+                    textAlign: "center",
+                    mx: "auto",
+                    display: "flex",
+                    justifyContent: "center",
+                    minWidth: "260px",
+                    mt: 1,
+                  }}
+                />
+              </div>
+            </Box>
           </Box>
-        </DialogContentText>
-        <DialogActions>
-          <Button onClick={() => setOpen(false)}>Cancel</Button>
-          <Button autoFocus onClick={() => handleUpdate()}>
-            Submit
-          </Button>
-        </DialogActions>
+          <DialogActions>
+            <Button onClick={() => setOpen(false)}>Cancel</Button>
+            <Button autoFocus onClick={submitUpdate}>
+              Submit
+            </Button>
+          </DialogActions>
+        </Box>
+      </Dialog>
+      <Dialog
+        open={openAdd}
+        onClose={() => setOpenAdd(false)}
+        aria-labelledby="dialog-title"
+        aria-describedby="dialog-description"
+      >
+        <Box
+          sx={{
+            py: 2,
+            px: 4,
+            minWidth: "300px",
+          }}
+        >
+          <DialogTitle
+            id="dialog-title"
+            sx={{
+              pb: 0.5,
+            }}
+          >
+            Add an user
+          </DialogTitle>
+          <Box id="dialog-description">
+            <Box>
+              <div
+                className="update"
+                style={{
+                  width: "100%",
+                }}
+              >
+                <div
+                  className="update"
+                  style={{
+                    width: "85%",
+                    display: "flex",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <input
+                    style={{
+                      height: "30px",
+                      width: "100%",
+                      border: "1px solid #ccc",
+                      paddingLeft: "10px",
+                    }}
+                    placeholder="Name"
+                    type="text"
+                    value={text}
+                    onChange={(e) => setText(e.target.value)}
+                  />
+                </div>
+              </div>
+            </Box>
+          </Box>
+          <DialogActions>
+            <Button onClick={() => setOpenAdd(false)}>Cancel</Button>
+            <Button autoFocus onClick={submit}>
+              Submit
+            </Button>
+          </DialogActions>
+        </Box>
       </Dialog>
     </div>
   );
